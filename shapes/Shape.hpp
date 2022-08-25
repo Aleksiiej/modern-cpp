@@ -14,7 +14,7 @@ class Shape
 {
 public:
     Shape(Color c) : color_(c) {}
-    Shape() {}
+    Shape() = default;
     Shape(Shape const &sh) : color_(sh.color_) {}
     virtual ~Shape() = default;
 

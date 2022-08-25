@@ -1,10 +1,11 @@
-#include <iostream>
-#include <vector>
 #include <algorithm>
-#include <string>
-#include <memory>
+#include <chrono>
 #include <initializer_list>
+#include <iostream>
 #include <map>
+#include <memory>
+#include <string>
+#include <vector>
 
 #include "Shape.hpp"
 #include "Rectangle.hpp"
@@ -50,7 +51,7 @@ auto areaLessThan10(shared_ptr<Shape> s)
 
 void printCollectionElements(const Collection &collection)
 {
-    for (const auto el : collection)
+    for (const auto &el : collection)
     {
         if (el)
             el->print();
@@ -59,7 +60,7 @@ void printCollectionElements(const Collection &collection)
 
 void printAreas(const Collection &collection)
 {
-    for (const auto el : collection)
+    for (const auto &el : collection)
     {
         if (el)
             cout << el->getArea() << std::endl;
@@ -82,8 +83,29 @@ void findFirstShapeMatchingPredicate(const Collection &collection,
     }
 }
 
+// constexpr int fib(int number)
+// {
+//     if (number == 0)
+//     {
+//         return 0;
+//     }
+//     else if (number == 1)
+//     {
+//         return 1;
+//     }
+//     else
+//         return (fib(number - 1) + fib(number - 2));
+// }
+// constexpr int result = fib(45);
+
 int main()
 {
+    // auto start = std::chrono::steady_clock::now();
+    // int result = fib(45);
+    // auto end = std::chrono::steady_clock::now();
+    // std::cout << "Fibonacci number : " << result << std::endl;
+    // std::cout << "Time(miliseconds): " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
+
     Collection shapes = {
         make_shared<Circle>(2.0),
         make_shared<Circle>(3.0),
