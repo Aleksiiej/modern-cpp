@@ -3,6 +3,9 @@
 #include <algorithm>
 #include <string>
 #include <memory>
+#include <initializer_list>
+#include <map>
+
 #include "Shape.hpp"
 #include "Rectangle.hpp"
 #include "Square.hpp"
@@ -10,49 +13,65 @@
 
 using namespace std;
 
-typedef vector<shared_ptr<Shape>> Collection;
+using Collection = vector<shared_ptr<Shape>>;
 
-bool sortByArea(shared_ptr<Shape> first, shared_ptr<Shape> second)
-{
-    if(first == NULL || second == NULL)
+auto sortByArea = [](auto first, auto second)
+{if (first == nullptr || second == nullptr)
+    {
+
         return false;
-    return (first->getArea() < second->getArea());
-}
+    }
+    return (first->getArea() < second->getArea()); };
 
-bool perimeterBiggerThan20(shared_ptr<Shape> s)
+auto perimeterBiggerThan20 = [](auto s)
 {
-    if(s)
+    if (s)
+    {
         return (s->getPerimeter() > 20);
+    }
     return false;
-}
+};
 
-bool areaLessThan10(shared_ptr<Shape> s)
+auto areaLessThanX = [x = 10](auto s)
+{ if (s)
+    {
+        return (s->getArea() < x);
+    }
+    return false; };
+
+auto areaLessThan10(shared_ptr<Shape> s)
 {
-    if(s)
+    if (s)
+    {
         return (s->getArea() < 10);
+    }
     return false;
 }
 
-void printCollectionElements(const Collection& collection)
+void printCollectionElements(const Collection &collection)
 {
-    for(Collection::const_iterator it = collection.begin(); it != collection.end(); ++it)
-        if(*it)
-            (*it)->print();
+    for (const auto el : collection)
+    {
+        if (el)
+            el->print();
+    }
 }
 
-void printAreas(const Collection& collection)
+void printAreas(const Collection &collection)
 {
-    for(vector<shared_ptr<Shape>>::const_iterator it = collection.begin(); it != collection.end(); ++it)
-        if(*it)
-            cout << (*it)->getArea() << std::endl;
+    for (const auto el : collection)
+    {
+        if (el)
+            cout << el->getArea() << std::endl;
+    }
 }
 
-void findFirstShapeMatchingPredicate(const Collection& collection,
-                                     bool (*predicate)(shared_ptr<Shape> s),
+void findFirstShapeMatchingPredicate(const Collection &collection,
+                                     std::function<bool(shared_ptr<Shape> s)> predicate,
                                      std::string info)
 {
-    Collection::const_iterator iter = std::find_if(collection.begin(), collection.end(), predicate);
-    if(*iter != 0)
+    auto iter = std::find_if(collection.begin(), collection.end(), predicate);
+    if (*iter != nullptr)
     {
         cout << "First shape matching predicate: " << info << endl;
         (*iter)->print();
@@ -65,15 +84,19 @@ void findFirstShapeMatchingPredicate(const Collection& collection,
 
 int main()
 {
-    Collection shapes;
-    shapes.push_back(make_shared<Circle>(2.0));
-    shapes.push_back(make_shared<Circle>(3.0));
-    shapes.push_back(nullptr);
-    shapes.push_back(make_shared<Circle>(4.0));
-    shapes.push_back(make_shared<Rectangle>(10.0, 5.0));
-    shapes.push_back(make_shared<Square>(3.0));
-    shapes.push_back(make_shared<Circle>(4.0));
+    Collection shapes = {
+        make_shared<Circle>(2.0),
+        make_shared<Circle>(3.0),
+        nullptr,
+        make_shared<Circle>(4.0),
+        make_shared<Rectangle>(10.0, 5.0),
+        make_shared<Square>(3.0),
+        make_shared<Circle>(4.0),
+    };
+    shapes.push_back(make_shared<Circle>(Color::RED));
     printCollectionElements(shapes);
+    Circle c{Color::WHITE};
+    cout << c.getPi() << endl;
 
     cout << "Areas before sort: " << std::endl;
     printAreas(shapes);
@@ -87,8 +110,24 @@ int main()
     shapes.push_back(square);
 
     findFirstShapeMatchingPredicate(shapes, perimeterBiggerThan20, "perimeter bigger than 20");
-    findFirstShapeMatchingPredicate(shapes, areaLessThan10, "area less than 10");
+    findFirstShapeMatchingPredicate(shapes, areaLessThanX, "area less than X");
+
+    // std::cout << alignof(Circle) << std::endl;
+
+    // std::map<shared_ptr<Shape>, double> perimeters;
+    // for (const auto &el : shapes)
+    // {
+    //     if (el)
+    //     {
+    //         perimeters.emplace(el, el->getPerimeter());
+    //     }
+    // }
+
+    // for (auto&& [shape, perimeter] : perimeters)
+    // {
+    //     shape->print();
+    //     std::cout << "perimeter is: " << perimeter << endl;
+    // }
 
     return 0;
 }
-
